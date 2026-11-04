@@ -467,6 +467,25 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--accent-light); 
   isolation: isolate;
 }
 
+/* the big circle that follows the cursor INSIDE this box
+   (the page-wide circle is hidden behind this dark box, so the box has its own) */
+.bubbles__orb {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 0;                       /* behind the bubbles (they are z-index 1) */
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background-color: #a78bfa;
+  box-shadow: 0 0 24px 6px rgba(139, 92, 246, 0.35);
+  opacity: 0;
+  pointer-events: none;
+  will-change: transform;
+  transition: opacity 0.3s ease;
+}
+.bubbles__orb.is-on { opacity: 0.55; }
+
 .bubbles__hint {
   position: absolute;
   left: 0;
@@ -632,20 +651,47 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--accent-light); 
   .xrow__desc { font-size: 0.95rem; }
 }
 
-/* ===== CONTACT ===== */
-.contact .container { width: min(1100px, 100% - 2.5rem); }
-.contact__head { position: relative; z-index: 60; text-align: center; margin-bottom: 4.5rem; }
+/* ===== CONTACT (info + form) ===== */
+.contact .container { width: min(1180px, 100% - 2.5rem); }
+.contact__head { position: relative; z-index: 60; text-align: center; margin-bottom: 2.25rem; }
 .contact__title { font-size: clamp(1.8rem, 3.6vw, 2.6rem); margin-bottom: 0.75rem; }
-.contact__sub { font-family: var(--font-heading); font-weight: 600; font-size: clamp(1rem, 1.8vw, 1.3rem); color: var(--muted); margin-bottom: 2rem; }
+.contact__sub { font-family: var(--font-heading); font-weight: 600; font-size: clamp(1rem, 1.8vw, 1.3rem); color: var(--muted); margin-bottom: 0; }
 
-/* "Copy email" pill button */
+.cwrap {
+  position: relative; z-index: 60;                    /* above the big dot */
+  display: grid; grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.3fr);
+  gap: clamp(2rem, 5vw, 4.5rem); align-items: start;
+}
+
+/* left column: your details */
+.cinfo { display: flex; flex-direction: column; gap: 1.6rem; text-align: left; padding-top: 0.4rem; }
+.cblock h3 { font-size: clamp(1.1rem, 1.6vw, 1.35rem); color: var(--accent); margin-bottom: 0.5rem; }
+.ccol__text { display: block; margin: 0; font-size: 1rem; color: var(--text); text-decoration: none; word-break: break-word; }
+a.ccol__text:hover { color: var(--accent-light); }
+
+.clinks { display: flex; flex-direction: column; gap: 0.55rem; text-align: left; }
+.clinks li { width: fit-content; }
+.clinks a {
+  display: flex; align-items: center; justify-content: flex-start; gap: 0.5rem;
+  color: var(--text); text-decoration: none; font-size: 1.05rem;
+  transition: color 0.2s;
+}
+.clinks svg {
+  width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor;
+  stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform 0.2s;
+}
+.clinks a:hover { color: var(--accent-light); }
+.clinks a:hover svg { transform: translate(3px, -3px); }
+
+/* "Copy email" pill button (small, under the email address) */
 .copybtn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.7rem;
-  min-width: 12.5rem; padding: 0.85rem 2rem; border-radius: 999px; cursor: pointer;
-  font-family: var(--font-heading); font-weight: 600; font-size: 1rem; color: var(--text);
+  margin-top: 0.8rem; padding: 0.5rem 1.2rem; border-radius: 999px; cursor: pointer;
+  font-family: var(--font-heading); font-weight: 600; font-size: 0.9rem; color: var(--text);
   border: 2px solid var(--accent);
   background: linear-gradient(135deg, rgba(124, 58, 237, 0.4), rgba(17, 15, 30, 0.9));
-  box-shadow: 0 0 26px rgba(139, 92, 246, 0.4);
+  box-shadow: 0 0 18px rgba(139, 92, 246, 0.35);
   transition: transform 0.25s, box-shadow 0.25s, border-color 0.25s;
 }
 .copybtn:hover { transform: translateY(-3px); box-shadow: 0 0 38px rgba(139, 92, 246, 0.65); }
@@ -659,34 +705,72 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--accent-light); 
 .copybtn.is-copied .copybtn__icon--copy { display: none; }
 .copybtn.is-copied .copybtn__icon--done { display: block; }
 
-/* three columns: email + location | social media | messages */
-.cgrid {
-  position: relative; z-index: 60;
-  display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 3rem;
-  text-align: center;
+/* right column: the message form */
+.cform {
+  display: flex; flex-direction: column; gap: 1.05rem;
+  padding: 2rem; border-radius: 32px; border: 1px solid var(--line);
+  background:
+    radial-gradient(ellipse 80% 50% at 100% 0%, rgba(124, 58, 237, 0.5), transparent 70%),
+    #0b0916;
 }
-.cblock + .cblock { margin-top: 2.5rem; }
-.cblock h3 { font-size: clamp(1.1rem, 1.6vw, 1.35rem); color: var(--accent); margin-bottom: 1rem; }
-.ccol__text { display: block; margin: 0; font-size: 1rem; color: var(--text); text-decoration: none; word-break: break-word; }
-a.ccol__text:hover { color: var(--accent-light); }
+.cform__row { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; }
 
-.clinks { display: inline-flex; flex-direction: column; gap: 0.7rem; text-align: left; }
-.clinks a {
-  display: flex; align-items: center; justify-content: space-between; gap: 1rem;
-  color: var(--text); text-decoration: none; font-size: 1.05rem;
-  transition: color 0.2s;
+.cfield { display: flex; flex-direction: column; gap: 0.4rem; }
+.cfield label { font-family: var(--font-heading); font-weight: 600; font-size: 0.9rem; color: var(--text); }
+.cfield input,
+.cfield textarea {
+  width: 100%; padding: 0.8rem 1rem; border-radius: 14px;
+  border: 1px solid var(--line); background: rgba(17, 15, 30, 0.85);
+  color: var(--text); font: inherit; font-size: 1rem; line-height: 1.4;
+  transition: border-color 0.25s, box-shadow 0.25s, background-color 0.25s;
 }
-.clinks svg {
-  width: 18px; height: 18px; flex: none; fill: none; stroke: currentColor;
-  stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
-  transition: transform 0.2s;
+.cfield textarea { resize: vertical; min-height: 110px; }
+.cfield input::placeholder,
+.cfield textarea::placeholder { color: rgba(163, 159, 186, 0.6); }
+.cfield input:hover,
+.cfield textarea:hover { border-color: rgba(139, 92, 246, 0.5); }
+.cfield input:focus,
+.cfield textarea:focus {
+  outline: none; border-color: var(--accent); background: rgba(17, 15, 30, 1);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.28);
 }
-.clinks a:hover { color: var(--accent-light); }
-.clinks a:hover svg { transform: translate(3px, -3px); }
+.cfield input[aria-invalid="true"],
+.cfield textarea[aria-invalid="true"] { border-color: #f87171; box-shadow: 0 0 0 3px rgba(248, 113, 113, 0.18); }
 
-@media (max-width: 768px) {
-  .contact__head { margin-bottom: 3rem; }
-  .cgrid { grid-template-columns: 1fr; gap: 2.5rem; }
+/* send button */
+.cform__send {
+  align-self: flex-start; display: inline-flex; align-items: center; gap: 0.7rem;
+  padding: 0.85rem 2.2rem; border-radius: 999px; cursor: pointer;
+  font-family: var(--font-heading); font-weight: 600; font-size: 1rem; color: var(--text);
+  border: 2px solid var(--accent);
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.55), rgba(17, 15, 30, 0.9));
+  box-shadow: 0 0 26px rgba(139, 92, 246, 0.4);
+  transition: transform 0.25s, box-shadow 0.25s, opacity 0.25s;
+}
+.cform__send:hover { transform: translateY(-3px); box-shadow: 0 0 38px rgba(139, 92, 246, 0.7); }
+.cform__send:active { transform: scale(0.98); }
+.cform__send:disabled { opacity: 0.65; cursor: progress; transform: none; }
+.cform__send svg {
+  width: 18px; height: 18px; fill: none; stroke: currentColor;
+  stroke-width: 2; stroke-linecap: round; stroke-linejoin: round;
+  transition: transform 0.25s;
+}
+.cform__send:hover:not(:disabled) svg { transform: translate(3px, -3px); }
+
+.cform__status { min-height: 1.5em; margin: 0; font-size: 0.95rem; line-height: 1.45; color: var(--muted); }
+.cform__status.is-ok    { color: #86efac; }
+.cform__status.is-error { color: #fca5a5; }
+.cform__status a { color: var(--accent-light); text-decoration: underline; text-underline-offset: 3px; }
+.cform__status a:hover { color: var(--text); }
+
+@media (max-width: 900px) {
+  .cwrap { grid-template-columns: 1fr; gap: 2.25rem; }
+}
+@media (max-width: 600px) {
+  .contact__head { margin-bottom: 1.75rem; }
+  .cform { padding: 1.4rem; border-radius: 26px; }
+  .cform__row { grid-template-columns: 1fr; }
+  .cform__send { align-self: stretch; justify-content: center; }
 }
 
 /* ===== FOOTER ===== */

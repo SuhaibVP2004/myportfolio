@@ -211,6 +211,7 @@ document.querySelectorAll(".skcard").forEach((card) => {
 // ==================================================
 // TECH STACK BUBBLES
 // Medium-sized bubbles + smooth movement + hover label
+// + a big circle that follows the cursor inside the box
 // ==================================================
 
 (function () {
@@ -400,6 +401,47 @@ document.querySelectorAll(".skcard").forEach((card) => {
   });
 
 
+  // ===== CURSOR CIRCLE (follows the mouse inside the tech stack box) =====
+  const orbEl = document.createElement("div");
+  orbEl.className = "bubbles__orb";
+  orbEl.setAttribute("aria-hidden", "true");
+
+  const orbSize = window.matchMedia("(pointer: coarse)").matches ? 56 : 64;
+  orbEl.style.width = orbEl.style.height = orbSize + "px";
+
+  arena.insertBefore(orbEl, arena.firstChild);   // sits behind the bubbles
+
+  let orbX = 0;
+  let orbY = 0;
+  let orbOn = false;
+
+  function showOrb() {
+    if (orbOn || reduceMotion) return;
+
+    orbX = mouse.x;                              // appear right under the cursor
+    orbY = mouse.y;
+    orbOn = true;
+
+    orbEl.classList.add("is-on");
+  }
+
+  function hideOrb() {
+    orbOn = false;
+
+    orbEl.classList.remove("is-on");
+  }
+
+  function moveOrb() {
+    if (orbOn) {
+      orbX += (mouse.x - orbX) * 0.12;           // glide after the cursor
+      orbY += (mouse.y - orbY) * 0.12;
+    }
+
+    orbEl.style.transform =
+      `translate3d(${orbX - orbSize / 2}px, ${orbY - orbSize / 2}px, 0)`;
+  }
+
+
   // ===== UPDATE THE BOTTOM LABEL =====
   function setActiveName(name) {
     if (!hint || activeName === name) return;
@@ -407,8 +449,8 @@ document.querySelectorAll(".skcard").forEach((card) => {
     activeName = name;
 
     hint.textContent = name
-      ? name.toUpperCase() + "  ·  TECH STACK"
-      : "HOVER OVER A BUBBLE";
+      ? name.toUpperCase() + "    "
+      : "";
 
     hint.classList.toggle("is-active", Boolean(name));
   }
@@ -609,6 +651,8 @@ document.querySelectorAll(".skcard").forEach((card) => {
 
     drawBubbles();
 
+    moveOrb();
+
     requestAnimationFrame(loop);
   }
 
@@ -619,6 +663,8 @@ document.querySelectorAll(".skcard").forEach((card) => {
 
     mouse.x = clientX - rect.left;
     mouse.y = clientY - rect.top;
+
+    showOrb();
 
     let hovered = null;
     let nearest = Infinity;
@@ -651,6 +697,8 @@ document.querySelectorAll(".skcard").forEach((card) => {
     mouse.x = -9999;
     mouse.y = -9999;
 
+    hideOrb();
+
     setActiveName("");
   });
 
@@ -658,6 +706,8 @@ document.querySelectorAll(".skcard").forEach((card) => {
     if (window.matchMedia("(pointer: coarse)").matches) {
       mouse.x = -9999;
       mouse.y = -9999;
+
+      hideOrb();
     }
   });
 
@@ -869,6 +919,143 @@ if (copyBtn) {
 
       copyBtn.classList.remove("is-copied");
     }, 2000);
+  });
+}
+
+
+// ===== CONTACT FORM: SEND TO EMAIL (FormSubmit) =====
+const contactForm = document.getElementById("contact-form");
+
+if (contactForm) {
+  const ENDPOINT = "https://formsubmit.co/ajax/shuhaib182004@gmail.com";
+
+  const statusEl = document.getElementById("cform-status");
+  const sendBtn = contactForm.querySelector(".cform__send");
+  const sendLabel = contactForm.querySelector(".cform__label");
+
+  function setStatus(message, type) {
+    statusEl.textContent = message;
+    statusEl.className = "cform__status" + (type ? " is-" + type : "");
+  }
+
+  function isValid(field) {
+    const value = field.value.trim();
+
+    if (!value) return false;
+
+    if (field.type === "email") {
+      return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value);
+    }
+
+    if (field.type === "tel") {
+      return (
+        /^[+\d\s\-()]+$/.test(value) &&
+        value.replace(/\D/g, "").length >= 7
+      );
+    }
+
+    return true;
+  }
+
+  // clear the red border as soon as the visitor edits a field
+  contactForm.querySelectorAll("[required]").forEach((field) => {
+    field.addEventListener("input", () => {
+      field.removeAttribute("aria-invalid");
+    });
+  });
+
+  contactForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    // spam trap: bots fill the hidden field, people never see it
+    if (contactForm.elements["_honey"].value) return;
+
+    let firstBad = null;
+
+    contactForm.querySelectorAll("[required]").forEach((field) => {
+      const ok = isValid(field);
+
+      field.setAttribute("aria-invalid", !ok);
+
+      if (!ok && !firstBad) firstBad = field;
+    });
+
+    if (firstBad) {
+      setStatus("Please fill in every field correctly.", "error");
+      firstBad.focus();
+      return;
+    }
+
+    sendBtn.disabled = true;
+    sendLabel.textContent = "Sending...";
+    setStatus("", "");
+
+    try {
+      const response = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: new FormData(contactForm)
+      });
+
+      const raw = await response.text();
+
+      let data = {};
+
+      try {
+        data = JSON.parse(raw);
+      } catch {
+        // the reply was not JSON; handled below
+      }
+
+      if (response.ok && String(data.success) === "true") {
+        contactForm.reset();
+        setStatus("Thank you! Your message has been sent.", "ok");
+      } else {
+        console.warn("FormSubmit reply:", response.status, raw);
+        throw new Error(data.message || "HTTP " + response.status);
+      }
+    } catch (error) {
+      console.warn("Contact form error:", error);
+
+      const text = String((error && error.message) || "");
+      let message;
+
+      if (/activat/i.test(text)) {
+        // first message ever: FormSubmit asks you to confirm your email once
+        message =
+          "Almost done! Check the inbox of shuhaib182004@gmail.com (and spam) for an email from FormSubmit, click “Activate Form”, then press Send again.";
+      } else if (error instanceof TypeError) {
+        message =
+          "Could not reach the mail service. Check the internet, turn off any ad blocker, and open the site from its web address (not as a file on the computer).";
+      } else {
+        message =
+          "Sorry, your message could not be sent." + (text ? " (" + text + ")" : "");
+      }
+
+      setStatus(message, "error");
+
+      // backup: open the visitor's own email app with the message filled in
+      const body =
+        "Name: " + contactForm.elements["name"].value +
+        "\nPhone: " + contactForm.elements["phone"].value +
+        "\nEmail: " + contactForm.elements["email"].value +
+        "\n\n" + contactForm.elements["message"].value;
+
+      const mailLink = document.createElement("a");
+
+      mailLink.href =
+        "mailto:shuhaib182004@gmail.com?subject=" +
+        encodeURIComponent("Message from your portfolio") +
+        "&body=" +
+        encodeURIComponent(body);
+
+      mailLink.textContent = " Send it with my email app instead.";
+
+      statusEl.appendChild(mailLink);
+    } finally {
+      sendBtn.disabled = false;
+      sendLabel.textContent = "Send message";
+    }
   });
 }
 

@@ -24,7 +24,6 @@
         <li><a href="#about" class="nav__link">About</a></li>
         <li><a href="#projects" class="nav__link">Projects</a></li>
         <li><a href="#skills" class="nav__link">Skills</a></li>
-        
         <li><a href="#experience" class="nav__link">Experience</a></li>
         <li><a href="#contact" class="nav__link">Contact</a></li>
       </ul>
@@ -216,6 +215,10 @@
                   <li>Git</li>
                   <li>GitHub</li>
                   <li>VS Code</li>
+                  <li>PyCharm</li>
+                  <li>Android Studio</li>
+                  <li>Postman</li>
+                  <li>MySQL Workbench</li>
                 </ul>
               </div>
             </div>
@@ -322,40 +325,39 @@
       </div>
     </section>
 
-    <!-- CONTACT -->
+    <!-- CONTACT: info on the left, message form on the right -->
     <section id="contact" class="section contact">
       <div class="container reveal">
 
         <div class="contact__head">
           <h2 class="contact__title">Contact Me</h2>
           <p class="contact__sub">Tell me about your next project.</p>
-
-          <button class="copybtn" id="copy-email" type="button" data-email="shuhaib182004@gmail.com">
-            <span class="copybtn__label" aria-live="polite">Copy email</span>
-            <svg class="copybtn__icon copybtn__icon--copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
-            <svg class="copybtn__icon copybtn__icon--done" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
-          </button>
         </div>
 
-        <div class="cgrid">
+        <div class="cwrap">
 
-          <!-- Email + Location -->
-          <div class="ccol">
+          <!-- LEFT: your details -->
+          <div class="cinfo">
             <div class="cblock">
               <h3>Email</h3>
               <a class="ccol__text" href="mailto:shuhaib182004@gmail.com">shuhaib182004@gmail.com</a>
+
+              <button class="copybtn" id="copy-email" type="button" data-email="shuhaib182004@gmail.com">
+                <span class="copybtn__label" aria-live="polite">Copy email</span>
+                <svg class="copybtn__icon copybtn__icon--copy" viewBox="0 0 24 24" aria-hidden="true"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>
+                <svg class="copybtn__icon copybtn__icon--done" viewBox="0 0 24 24" aria-hidden="true"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+              </button>
             </div>
+
             <div class="cblock">
               <h3>Location</h3>
               <p class="ccol__text">Pattambi, Kerala, India</p>
             </div>
-          </div>
 
-          <!-- Social media -->
-          <div class="ccol">
             <div class="cblock">
               <h3>Social Media</h3>
               <ul class="clinks">
+                <li><a href="https://wa.me/qr/N65GGFUE6SEXC1" target="_blank" rel="noopener">WhatsApp <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a></li>
                 <li><a href="https://www.linkedin.com/in/suhaibvp2004" target="_blank" rel="noopener">LinkedIn <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a></li>
                 <li><a href="https://github.com/SuhaibVP2004" target="_blank" rel="noopener">GitHub <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a></li>
                 <li><a href="https://www.instagram.com/shuh4ibb_?cplk=MWQ0MTdjZDJ6dmtjeA==" target="_blank" rel="noopener">Instagram <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a></li>
@@ -364,16 +366,45 @@
             </div>
           </div>
 
-          <!-- Messages -->
-          <div class="ccol">
-            <div class="cblock">
-              <h3>Write Me &amp; We’ll Talk</h3>
-              <ul class="clinks">
-                <li><a href="https://wa.me/qr/N65GGFUE6SEXC1" target="_blank" rel="noopener">WhatsApp <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a></li>
-                <li><a href="https://www.instagram.com/shuh4ibb_?cplk=MWQ0MTdjZDJ6dmtjeA==" target="_blank" rel="noopener">Instagram <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 17 17 7M8 7h9v9"/></svg></a></li>
-              </ul>
+          <!-- RIGHT: the form. script.js sends it to your email with FormSubmit.
+               The action attribute is a backup that works even if JavaScript fails. -->
+          <form class="cform" id="contact-form" action="https://formsubmit.co/shuhaib182004@gmail.com" method="POST" novalidate>
+
+            <div class="cform__row">
+              <div class="cfield">
+                <label for="cf-name">Name</label>
+                <input id="cf-name" name="name" type="text" autocomplete="name" placeholder="Your name" required>
+              </div>
+              <div class="cfield">
+                <label for="cf-phone">Phone number</label>
+                <input id="cf-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+91 98765 43210" required>
+              </div>
             </div>
-          </div>
+
+            <div class="cfield">
+              <label for="cf-email">Email</label>
+              <input id="cf-email" name="email" type="email" autocomplete="email" placeholder="you@example.com" required>
+            </div>
+
+            <div class="cfield">
+              <label for="cf-message">Message</label>
+              <textarea id="cf-message" name="message" rows="4" placeholder="Tell me about your project..." required></textarea>
+            </div>
+
+            <!-- FormSubmit settings (not visible) -->
+            <input type="hidden" name="_subject" value="New message from your portfolio">
+            <input type="hidden" name="_template" value="table">
+            <input type="hidden" name="_captcha" value="false">
+            <!-- spam trap: real visitors never see or fill this, bots do -->
+            <input type="text" name="_honey" class="sr-only" tabindex="-1" autocomplete="off" aria-hidden="true">
+
+            <button class="cform__send" type="submit">
+              <span class="cform__label">Send message</span>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 2 11 13"/><path d="M22 2 15 22l-4-9-9-4z"/></svg>
+            </button>
+
+            <p class="cform__status" id="cform-status" role="status" aria-live="polite"></p>
+          </form>
 
         </div>
       </div>
