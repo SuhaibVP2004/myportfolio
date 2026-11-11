@@ -152,7 +152,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--accent-light); 
   filter: blur(30px); animation: pulse 7s ease-in-out infinite;
 }
 
-/* ---- HOME PROFILE IMAGE (updated) ---- */
+/* ---- HOME PROFILE IMAGE ---- */
 .profile-image {
   position: relative; z-index: 1; display: block;
   flex: none; width: 118%; margin-inline: -9%; height: auto; max-height: calc(100vh - 6.5rem);
@@ -172,7 +172,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--accent-light); 
 .profile-image.is-missing { display: none; }
 @keyframes pulse { 50% { transform: scale(1.08); opacity: 0.8; } }
 
-/* ---- NEW photo animations (used by Home and About) ---- */
+/* ---- photo animations (used by Home and About) ---- */
 @keyframes photoReveal {
   from { opacity: 0; filter: blur(14px) brightness(0.6); scale: 0.92; }
   to   { opacity: 1; filter: blur(0) brightness(1);      scale: 1; }
@@ -229,7 +229,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--accent-light); 
   filter: blur(40px);
 }
 
-/* ---- ABOUT IMAGE (updated) ---- */
+/* ---- ABOUT IMAGE ---- */
 .about__img {
   position: relative; z-index: 1; display: block;
   width: 100%; max-width: 520px; height: auto; max-height: calc(100vh - 8rem);
@@ -467,8 +467,7 @@ a:focus-visible, button:focus-visible { outline: 3px solid var(--accent-light); 
   isolation: isolate;
 }
 
-/* the big circle that follows the cursor INSIDE this box
-   (the page-wide circle is hidden behind this dark box, so the box has its own) */
+/* the big circle that follows the cursor INSIDE this box */
 .bubbles__orb {
   position: absolute;
   left: 0;
@@ -684,6 +683,58 @@ a.ccol__text:hover { color: var(--accent-light); }
 .clinks a:hover { color: var(--accent-light); }
 .clinks a:hover svg { transform: translate(3px, -3px); }
 
+/* ===== SOCIAL ICON BUTTONS (contact) ===== */
+.clinks.clinks--icons {
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+.clinks.clinks--icons li { width: auto; }
+
+.clinks a.cicon {
+  --brand: var(--accent-light);
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 1px solid var(--line);
+  background-color: rgba(17, 15, 30, 0.6);
+  color: var(--muted);
+  transition: transform 0.25s, color 0.25s, border-color 0.25s, box-shadow 0.25s;
+}
+.clinks a.cicon svg {
+  width: 22px;
+  height: 22px;
+  transform: none;
+}
+/* filled icons (LinkedIn, GitHub) */
+.clinks a.cicon svg.is-fill { fill: currentColor; stroke: none; }
+/* outline icons (WhatsApp, Instagram, Facebook) */
+.clinks a.cicon svg.is-stroke {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+/* hover: lift up, glow, and use the brand colour */
+.clinks a.cicon:hover,
+.clinks a.cicon:focus-visible {
+  transform: translateY(-4px);
+  color: var(--brand);
+  border-color: var(--brand);
+  box-shadow: 0 8px 22px color-mix(in srgb, var(--brand) 40%, transparent);
+}
+.clinks a.cicon:hover svg { transform: none; }
+
+/* brand colours */
+.cicon--whatsapp  { --brand: #25d366; }
+.cicon--linkedin  { --brand: #0a66c2; }
+.cicon--github    { --brand: #ffffff; }
+.cicon--instagram { --brand: #e4405f; }
+.cicon--facebook  { --brand: #1877f2; }
+
 /* "Copy email" pill button (small, under the email address) */
 .copybtn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.7rem;
@@ -859,5 +910,5 @@ a.ccol__text:hover { color: var(--accent-light); }
   html { scroll-behavior: auto; scroll-snap-type: none; }
   .reveal { opacity: 1; transform: none; }
   .about__media, .about__text { opacity: 1; transform: none; }
-  .about__img { opacity: 1; }   /* NEW: keeps the About photo visible when animations are off */
+  .about__img { opacity: 1; }   /* keeps the About photo visible when animations are off */
 }
